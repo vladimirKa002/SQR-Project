@@ -1,30 +1,39 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+import fastapi as _fastapi
+import fastapi.security as _security
 
-import models
-from database import engine
+import sqlalchemy.orm as _orm
 
-models.Base.metadata.create_all(bind=engine)
+import services as _services, schemas as _schemas
 
-app = FastAPI()
-
-origins = [
-    "http://localhost:3000",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app = _fastapi.FastAPI()
 
 
-# https://github.com/wpcodevo/fastapi_sqlalchemy/blob/master/app/main.py
-# app.include_router(note.router, tags=['Notes'], prefix='/api/notes')
+@app.post("/users/register")
+async def register(
+        user: _schemas.UserCreate, db: _orm.Session = _fastapi.Depends(_services.get_db)
+):
+    db_user = await _services.get_user_by_email(user.email, db)
+    if db_user:
+        raise _fastapi.HTTPException(status_code=400, detail="Email already in use")
+
+    user = await _services.create_user(user, db)
+
+    return await _services.create_token(user)
 
 
-@app.get("/api/healthchecker")
-def root():
-    return {"message": "Welcome to FastAPI with SQLAlchemy"}
+@app.post("/users/login")
+async def login(
+        form_data: _security.OAuth2PasswordRequestForm = _fastapi.Depends(),
+        db: _orm.Session = _fastapi.Depends(_services.get_db),
+):
+    user = await _services.authenticate_user(form_data.username, form_data.password, db)
+
+    if not user:
+        raise _fastapi.HTTPException(status_code=401, detail="Invalid Credentials")
+
+    return await _services.create_token(user)
+
+
+@app.get("/users/profile", response_model=_schemas.User)
+async def get_user(user: _schemas.User = _fastapi.Depends(_services.get_current_user)):
+    return user
