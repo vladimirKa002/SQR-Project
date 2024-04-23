@@ -71,3 +71,8 @@ async def get_current_user(
         )
 
     return _schemas.User.from_orm(user)
+
+#Надо наверное будет модифицировать, чтобы она возвращала все айтемы темплейта
+async def get_item(item_id: int, db:  _orm.Session):
+    return db.query(_models.Item).filter(_models.Item.email == item_id).first()
+
