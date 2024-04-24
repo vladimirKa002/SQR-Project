@@ -47,11 +47,6 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     return {'access_token': access_token, 'token_type': 'Bearer'}
 
 
-@app.get("/private")
-def private_route(user=Depends(manager)):
-    return {"detail": f"Welcome {user.name}"}
-
-
 if __name__ == "__main__":
     import uvicorn
 

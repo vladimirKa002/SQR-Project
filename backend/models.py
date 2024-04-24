@@ -1,4 +1,4 @@
-from sqlalchemy import String, Column, Integer, ForeignKey
+from sqlalchemy import String, Column, Integer, ForeignKey, Table
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -12,19 +12,30 @@ class User(Base):
     password = Column(String, nullable=False)
 
 
+template_item = Table(
+    'template_items',
+    Base.metadata,
+    Column('template_id', Integer, ForeignKey('templates.id')),
+    Column('item_id', Integer, ForeignKey('items.id'))
+)
+
+
 class Item(Base):
     __tablename__ = "items"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     description = Column(String)
     price = Column(Integer, nullable=False)
+    # picture
 
 
 class Template(Base):
     __tablename__ = "templates"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    description = Column(String)
+    # picture (cover)
+
+    items = relationship('Item', secondary=template_item)
 
 
 class TierList(Base):
@@ -33,31 +44,20 @@ class TierList(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     template_id = Column(Integer, ForeignKey('templates.id'), nullable=False)
 
-    # Define relationships
-    user = relationship("User")
     template = relationship("Template")
-
-
-class TemplateItem(Base):
-    __tablename__ = "template_items"
-    template_id = Column(Integer, ForeignKey('templates.id'), nullable=False, primary_key=True)
-    item_id = Column(Integer, ForeignKey('items.id'), nullable=False, primary_key=True)
-
-    # Define relationships
-    template = relationship("Template")
-    item = relationship("Item")
+    items = relationship('TierListItem')
 
 
 class TierListItem(Base):
     __tablename__ = "tier_list_items"
     tier_list_id = Column(Integer, ForeignKey('tier_lists.id'), nullable=False, primary_key=True)
     item_id = Column(Integer, ForeignKey('items.id'), nullable=False, primary_key=True)
+    tier_value = Column(String, ForeignKey('tiers.tier'), nullable=False, primary_key=True)
 
-    # Define relationships
-    tier_list = relationship("TierList")
     item = relationship("Item")
+    tier = relationship("Tier")
 
 
 class Tier(Base):
     __tablename__ = "tiers"
-    tier = Column(Integer, primary_key=True)
+    tier = Column(String, primary_key=True)
