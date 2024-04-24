@@ -2,15 +2,26 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQLITE_DATABASE_URL = "sqlite:///./foodtierlist.db"
+from config import DEFAULT_SETTINGS
 
-engine = create_engine(
-    SQLITE_DATABASE_URL, echo=True, connect_args={"check_same_thread": False}
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
+engine = create_engine(DEFAULT_SETTINGS.database_uri, connect_args={"check_same_thread": False})
 Base = declarative_base()
+db_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-import models
 
-Base.metadata.create_all(engine)
+class DBContext:
+
+    def __init__(self):
+        self.db = db_session()
+
+    def __enter__(self):
+        return self.db
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.db.close()
+
+
+def get_db():
+    """ Returns the current db connection """
+    with DBContext() as db:
+        yield db

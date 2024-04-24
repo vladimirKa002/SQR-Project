@@ -1,67 +1,58 @@
-import fastapi as _fastapi
-import fastapi.security as _security
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_login.exceptions import InvalidCredentialsException
+from sqlalchemy import inspect
 
-import sqlalchemy.orm as _orm
-
-import services as _services, schemas as _schemas
-
-app = _fastapi.FastAPI()
-
-
-@app.post("/users/register")
-async def register(
-        user: _schemas.UserCreate, db: _orm.Session = _fastapi.Depends(_services.get_db)
-):
-    db_user = await _services.get_user_by_email(user.email, db)
-    if db_user:
-        raise _fastapi.HTTPException(status_code=400, detail="Email already in use")
-
-    user = await _services.create_user(user, db)
-
-    return await _services.create_token(user)
+from config import DEFAULT_SETTINGS
+from schemas import UserCreate, UserResponse
+from database import get_db, Base, engine
+from database_actions import get_user, create_user
+from security import manager, verify_password
 
 
-@app.post("/users/login")
-async def login(
-        form_data: _security.OAuth2PasswordRequestForm = _fastapi.Depends(),
-        db: _orm.Session = _fastapi.Depends(_services.get_db),
-):
-    user = await _services.authenticate_user(form_data.username, form_data.password, db)
-
-    if not user:
-        raise _fastapi.HTTPException(status_code=401, detail="Invalid Credentials")
-
-    return await _services.create_token(user)
+app = FastAPI()
 
 
-@app.get("/users/profile", response_model=_schemas.User)
-async def get_user(user: _schemas.User = _fastapi.Depends(_services.get_current_user)):
-    return user
+@app.on_event("startup")
+def setup():
+    print("Creating db tables...")
+    Base.metadata.create_all(bind=engine)
+    inspection = inspect(engine)
+    print(f"Created {len(inspection.get_table_names())} tables: {inspection.get_table_names()}")
 
 
-# @app.get("/templates", response_model=list[_schemas.Template])
-# async def get_all_templates(db: _orm.Session):
-#     """
-#     Fetches all templates, returning only their IDs and names.
-#     """
-#     templates = db.query(_schemas.Template.id, _schemas.Template.name).all()
-#     return [_schemas.Template(id=template.id, name=template.name) for template in templates]
+@app.post("/auth/register")
+def register(user: UserCreate, db=Depends(get_db)):
+    if get_user(user.email) is not None:
+        raise HTTPException(status_code=400, detail="A user with this email already exists")
+    else:
+        db_user = create_user(db, user)
+        return UserResponse(id=db_user.id, email=db_user.email, name=db_user.name)
 
 
-# @app.get("/tierlists", response_model=list[_schemas.Tierlist])
-# async def get_all_tierlists(db: _orm.Session):
-#     """
-#     Returns all tierlists.
-#     """
-#     tierlists = db.query(_schemas.Tierlist.id, _schemas.Tierlist.name).all()
-#     return [_schemas.Template(id=tierlist.id, name=tierlist.name) for tierlist in tierlists]
+@app.post(DEFAULT_SETTINGS.token_url)
+def login(data: OAuth2PasswordRequestForm = Depends()):
+    email = data.username
+    password = data.password
+
+    user = get_user(email)  # we are using the same function to retrieve the user
+    if user is None:
+        raise InvalidCredentialsException  # you can also use your own HTTPException
+    elif not verify_password(password, user.password):
+        raise InvalidCredentialsException
+
+    access_token = manager.create_access_token(
+        data=dict(sub=user.email)
+    )
+    return {'access_token': access_token, 'token_type': 'Bearer'}
 
 
-@app.get("/templates/{template_id}", response_model=_schemas.Template)
-async def get_template(template: _schemas.Template = _fastapi.Depends(_services.get_template)):
-    return template
+@app.get("/private")
+def private_route(user=Depends(manager)):
+    return {"detail": f"Welcome {user.name}"}
 
 
-# @app.get("/tierlists/{template_id}", response_model=_schemas.Template)
-# async def get_tierlist(template: _schemas.Template = _fastapi.Depends(_services.get_tierlist)):
-#     return template
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run("main:app")

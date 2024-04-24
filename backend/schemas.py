@@ -1,23 +1,17 @@
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel, EmailStr
 
 
-class _UserBase(BaseModel):
+class UserCreate(BaseModel):
     name: str
-    email: str
-
-
-class UserCreate(_UserBase):
+    email: EmailStr
     password: str
 
-    class Config:
-        orm_mode = True
 
-
-class User(_UserBase):
+class UserResponse(BaseModel):
     id: int
-
-    class Config:
-        orm_mode = True
+    name: str
+    email: str
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Item(BaseModel):
