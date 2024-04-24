@@ -25,6 +25,7 @@ class Item(BaseModel):
     name: str
     description: str
     price: int
+    image: bytes
 
 
 class Template(BaseModel):

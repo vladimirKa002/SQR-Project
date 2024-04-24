@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import String, Column, Integer, ForeignKey
+from sqlalchemy import String, Column, Integer, ForeignKey, BLOB
 from fastapi_utils.guid_type import GUID, GUID_DEFAULT_SQLITE
 from sqlalchemy.orm import relationship
 
@@ -23,6 +23,7 @@ class Item(Base):
     name = Column(String, nullable=False)
     description = Column(String)
     price = Column(Integer, nullable=False)
+    image = Column(BLOB)
 
 
 class Template(Base):
