@@ -27,16 +27,16 @@ class Item(BaseModel):
     price: int
 
 
-class Template(BaseModel):
-    id: int
-    name: str
-    description: str
+class TierListItem(BaseModel):
+    tier_list_id: int
+    item_id: int
 
 
 class TierList(BaseModel):
     id: int
     user_id: int
     template_id: int
+    items: list[Item] = []
 
 
 class TemplateItem(BaseModel):
@@ -44,9 +44,11 @@ class TemplateItem(BaseModel):
     item_id: int
 
 
-class TierListItem(BaseModel):
-    tier_list_id: int
-    item_id: int
+class Template(BaseModel):
+    id: int
+    name: str
+    description: str
+    items: list[TemplateItem] = []
 
 
 class Tier(BaseModel):

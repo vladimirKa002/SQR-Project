@@ -72,7 +72,22 @@ async def get_current_user(
 
     return _schemas.User.from_orm(user)
 
-#Надо наверное будет модифицировать, чтобы она возвращала все айтемы темплейта
+
 async def get_item(item_id: int, db:  _orm.Session):
     return db.query(_models.Item).filter(_models.Item.email == item_id).first()
 
+
+def get_template(template_id: int, db: _orm.Session):
+    # Query the template by ID including its related items
+    template = db.query(_models.Template).filter(_models.Template.id == template_id).first()
+    if not template:
+        raise _fastapi.HTTPException(status_code=404, detail="Template is not found")
+    return template
+
+
+# def get_tierlist(tierlist_id: int, db: _orm.Session):
+#     # Query the template by ID including its related items
+#     tierlist = db.query(_models.Tierlist).filter(_models.Tierlist.id == tierlist_id).first()
+#     if not tierlist:
+#         raise _fastapi.HTTPException(status_code=404, detail="Tierlist is not found")
+#     return tierlist
