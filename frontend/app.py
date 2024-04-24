@@ -1,9 +1,32 @@
 import streamlit as st
-import requests
-
-st.set_page_config(page_title="Inno Food Tier list")
+import extra_streamlit_components as stx
+from menu import menu
+import datetime
 
 st.title("Inno Food Tier list")
+menu()
 
-name = st.text_input("Name")
-email = st.text_input("Email")
+st.write("# Cookie Manager")
+
+
+@st.cache_resource(experimental_allow_widgets=True)
+def get_manager():
+    return stx.CookieManager()
+
+
+cookie_manager = get_manager()
+
+st.subheader("All Cookies:")
+cookies = cookie_manager.get_all()
+st.write(cookies)
+
+cookie_manager.set('token', 'test_cookie')
+st.write(cookie_manager.get('token'))
+
+
+# Fuck this
+# if 'test' not in st.session_state:
+#     st.session_state['test'] = 'test'
+#     st.write('Created')
+# else:
+#     st.write('Readed')
