@@ -19,7 +19,7 @@ def get_template(template_id: int, db=Depends(get_db)):
 
 @app.post("/template/create", response_model=schemas.Template)
 def create_template(template: schemas.TemplateCreate, db=Depends(get_db)):
-    template = schemas.TemplateCreate(name=template.name)
+    template = schemas.TemplateCreate(name=template.name, picture=template.picture)
     db.add(template)
     db.commit()
     return template
@@ -31,6 +31,14 @@ def get_food(item_id: int, db=Depends(get_db)):
 
 
 # Create item
+@app.post("/item/create", response_model=schemas.Item)
+def create_item(item: schemas.Item, db=Depends(get_db)):
+    item = schemas.Item(
+        name=item.name, description=item.description, price=item.price, picture=item.picture
+    )
+    db.add(item)
+    db.commit()
+    return item
 
 
 @app.get("/tierlist/all", response_model=list[schemas.TierList])
@@ -45,3 +53,17 @@ def get_tierlist(template_id: int, user=Depends(manager), db=Depends(get_db)):
 
 
 # Create tier list
+@app.post("/tier_list/create", response_model=schemas.TierList)
+def create_item(tier_list: schemas.TierListCreate, db=Depends(get_db)):
+    existing_tier_list = db.query(models.TierList).filter(
+        models.TierList.user_id == tier_list.user_id
+    ).first()
+
+    if existing_tier_list:
+        # If the tier list already exists, return it
+        return existing_tier_list
+
+    tier_list = schemas.TierListCreate(template=tier_list.template)
+    db.add(tier_list)
+    db.commit()
+    return tier_list

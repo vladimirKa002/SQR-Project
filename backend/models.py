@@ -1,4 +1,4 @@
-from sqlalchemy import String, Column, Integer, ForeignKey, Table
+from sqlalchemy import String, Column, Integer, ForeignKey, Table, BLOB
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -26,14 +26,14 @@ class Item(Base):
     name = Column(String, nullable=False)
     description = Column(String)
     price = Column(Integer, nullable=False)
-    # picture
+    picture = Column(BLOB, nullable=False)
 
 
 class Template(Base):
     __tablename__ = "templates"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    # picture (cover)
+    picture = Column(BLOB, nullable=False)
 
     items = relationship('Item', secondary=template_item)
 

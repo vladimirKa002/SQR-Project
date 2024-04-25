@@ -19,7 +19,7 @@ class Item(BaseModel):
     name: str
     description: str
     price: int
-    # picture
+    picture: bytes
 
 
 class Tier(BaseModel):
@@ -36,16 +36,21 @@ class Template(BaseModel):
     id: int
     name: str
     items: list[Item] = []
-    # picture (cover)
+    picture: bytes
 
 
 class TemplateCreate(BaseModel):
     id: int
     name: str
-    # picture (cover)
+    picture: bytes
 
 
 class TierList(BaseModel):
     id: int
     template: Template
     items: list[TierListItem] = []
+
+
+class TierListCreate(BaseModel):
+    id: int
+    template: Template
