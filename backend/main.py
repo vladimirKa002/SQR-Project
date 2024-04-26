@@ -9,8 +9,11 @@ from database import get_db, Base, engine
 from database_actions import get_user, create_user
 from security import manager, verify_password
 
+from service import router as service_router
+
 
 app = FastAPI()
+app.include_router(service_router)
 
 
 @app.on_event("startup")
