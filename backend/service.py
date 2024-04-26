@@ -1,10 +1,9 @@
-from fastapi import Depends
+from fastapi import Depends, APIRouter
 
 import models
 import schemas
-from backend.database import get_db
-from backend.security import manager
-from fastapi import APIRouter
+from database import get_db
+from security import manager
 
 
 router = APIRouter()
