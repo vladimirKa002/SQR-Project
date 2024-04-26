@@ -14,43 +14,39 @@ class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class Item(BaseModel):
-    id: int
+class ItemCreate(BaseModel):
     name: str
     description: str
     price: int
     picture: bytes
 
 
-class Tier(BaseModel):
-    tier: str
+class Item(ItemCreate):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TierListItem(BaseModel):
-    tier_list_id: int
     item_id: int
-    tier: Tier
+    tier: str
+
+
+class TemplateCreate(BaseModel):
+    name: str
+    picture: bytes
+    items: list[int]
 
 
 class Template(BaseModel):
     id: int
     name: str
+    picture: bytes
     items: list[Item] = []
-    picture: bytes
-
-
-class TemplateCreate(BaseModel):
-    id: int
-    name: str
-    picture: bytes
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TierList(BaseModel):
     id: int
     template: Template
     items: list[TierListItem] = []
-
-
-class TierListCreate(BaseModel):
-    id: int
-    template: Template
+    model_config = ConfigDict(from_attributes=True)
