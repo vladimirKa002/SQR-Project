@@ -1,5 +1,6 @@
 from fastapi import Depends, APIRouter
 
+import requests
 import models
 import schemas
 from database import get_db
@@ -69,3 +70,15 @@ def create_item(tier_list: schemas.TierListCreate, db=Depends(get_db)):
     db.add(tier_list)
     db.commit()
     return tier_list
+
+
+@router.get("/fact")
+def get_fact(language="en"):
+    url = f"https://uselessfacts.jsph.pl/api/v2/facts/today?language={language}"
+    headers = {"Accept": "application/json"}
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        return data["text"]
+    else:
+        return "Failed to fetch today's useless fact"
