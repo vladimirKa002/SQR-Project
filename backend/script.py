@@ -10,33 +10,30 @@ import random
 from PIL import Image
 import io
 
+def get_file_names(directory):
+    """Return a list of file names in the given directory."""
+    # List all entries in the directory
+    entries = os.listdir(directory)
+    # Filter entries to include files only, excluding directories
+    file_names = [entry for entry in entries if os.path.isfile(os.path.join(directory, entry))]
+    return file_names
+
+def convertToBinaryData(filename):
+    # Convert digital data to binary format
+    with open(filename, 'rb') as file:
+        blobData = file.read()
+    return blobData
 
 def generate_random_items(n):
     """Generate n random items with a simple image."""
-    colors = {
-        'Red': (255, 0, 0),
-        'Blue': (0, 0, 255),
-        'Green': (0, 255, 0),
-        'Yellow': (255, 255, 0),
-        'Black': (0, 0, 0),
-        'White': (255, 255, 255)
-    }
-    sizes = ['small', 'medium', 'large', 'extra large']
-    base_price = 100  # Base price for items
 
     for _ in range(n):
-        color_name, rgb = random.choice(list(colors.items()))
         size = random.choice(sizes)
         name = f"{color_name} Pizza"
         description = f"A {size} {color_name.lower()} pizza"
         price = base_price + random.randint(-20, 50)  # Randomize price a bit
-
-        # Create an image with PIL
-        img = Image.new('RGB', (100, 100), color=rgb)
-        byte_arr = io.BytesIO()
-        img.save(byte_arr, format='PNG')
-        
-        yield Item(name=name, description=description, price=price, picture=byte_arr.getvalue())
+    
+        yield Item(name=name, description=description, price=price, picture=convertToBinaryData('images/apple.png'))
 
 
 def print_structure():
@@ -76,10 +73,10 @@ session.add_all(item_list)
 session.add_all([template1])
 session.commit()
 print("checkpoint")
-
+print (item_list[0])
 # Template items mapping (association table)
-session.execute(template_item.insert().values(template_id=template1.id, item_id=item_list[1]))
-session.execute(template_item.insert().values(template_id=template1.id, item_id=item_list[2]))
+session.execute(template_item.insert().values(template_id=template1.id, item_id=item_list[0].id))
+# session.execute(template_item.insert().values(template_id=template1.id, item_id=item_list[2]))
 session.commit()
 
 # Close session
