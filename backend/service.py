@@ -73,8 +73,8 @@ def create_item(tier_list: schemas.TierListCreate, db=Depends(get_db)):
 
 
 @router.get("/fact")
-def get_fact(language="en"):
-    url = f"https://uselessfacts.jsph.pl/api/v2/facts/today?language={language}"
+def get_fact():
+    url = f"https://uselessfacts.jsph.pl/api/v2/facts/today?language={'en'}"
     headers = {"Accept": "application/json"}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
