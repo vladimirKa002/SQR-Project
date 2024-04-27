@@ -9,7 +9,7 @@ from database import get_db, Base, engine
 from database_actions import get_user, create_user
 from security import manager, verify_password
 
-from service import router as service_router
+from service import service_router
 
 
 app = FastAPI()

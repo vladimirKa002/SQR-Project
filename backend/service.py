@@ -1,78 +1,97 @@
-from fastapi import Depends, APIRouter
-
-import requests
-import models
-import schemas
+from fastapi import Depends, APIRouter, HTTPException
 from database import get_db
 from security import manager
 
+import requests
+import schemas
+import database_actions as db_actions
 
-router = APIRouter()
+
+service_router = APIRouter()
 
 
-@router.get("/template/all", response_model=list[schemas.Template])
+@service_router.get("/template/all", response_model=list[schemas.Template])
 def get_all_templates(db=Depends(get_db)):
-    return db.query(models.Template).all()
+    return db_actions.get_all_templates(db)
 
 
-@router.get("/template/{template_id}", response_model=schemas.Template)
+@service_router.get("/template/get/{template_id}", response_model=schemas.Template)
 def get_template(template_id: int, db=Depends(get_db)):
-    return db.query(models.Template).where(models.Template.id == template_id).first()
+    result = db_actions.get_template(template_id, db)
+    if result:
+        return result
+    else:
+        raise HTTPException(status_code=404, detail="The template with this id does not exist.")
 
 
-@router.post("/template/create", response_model=schemas.Template)
-def create_template(template: schemas.TemplateCreate, db=Depends(get_db)):
-    template = schemas.TemplateCreate(name=template.name, picture=template.picture)
-    db.add(template)
-    db.commit()
-    return template
+@service_router.post("/template/create", response_model=schemas.Template)
+def create_template(template: schemas.TemplateCreate, user=Depends(manager), db=Depends(get_db)):
+    template = db_actions.create_template(template.name, template.items, template.picture, db)
+    return schemas.Template.from_orm(template)
 
 
-@router.get("/item/{item_id}", response_model=schemas.Item)
-def get_food(item_id: int, db=Depends(get_db)):
-    return db.query(models.Item).where(models.Item.id == item_id).first()
+@service_router.get("/item/get/{item_id}", response_model=schemas.Item)
+def get_item(item_id: int, db=Depends(get_db)):
+    result = db_actions.get_item(item_id, db)
+    if result:
+        return result
+    else:
+        raise HTTPException(status_code=404, detail="The item with this id does not exist.")
 
 
-# Create item
-@router.post("/item/create", response_model=schemas.Item)
-def create_item(item: schemas.Item, db=Depends(get_db)):
-    item = schemas.Item(
-        name=item.name, description=item.description, price=item.price, picture=item.picture
-    )
-    db.add(item)
-    db.commit()
-    return item
+@service_router.post("/item/create", response_model=schemas.Item)
+def create_item(item: schemas.ItemCreate, user=Depends(manager), db=Depends(get_db)):
+    item = db_actions.create_item(item.name, item.description, item.price, item.picture, db)
+    return schemas.Item.from_orm(item)
 
 
-@router.get("/tierlist/all", response_model=list[schemas.TierList])
+@service_router.post("/item/rank/")
+def rank_item(item_id: int, tierlist_id: int, tier: str, user=Depends(manager), db=Depends(get_db)):
+    item = db_actions.get_item(item_id, db)
+    if not item:
+        raise HTTPException(status_code=404, detail="The item with this id does not exist.")
+
+    tierlist = db_actions.get_tierlist_by_id(tierlist_id, db)
+    if not tierlist:
+        raise HTTPException(status_code=404, detail="The tierlist for this template and user does not exist.")
+
+    if tier not in "ABCDEFS_":
+        raise HTTPException(status_code=422, detail="Invalid data for rank was provided.")
+
+    if tier == "_":
+        db_actions.delete_tierlist_item(item_id, tierlist.id, db)
+        return {'status_code': 200, 'detail': 'The item unranked.'}
+    else:
+        item = db_actions.rank_tierlist_item(item_id, tierlist.id, tier, db)
+        return {'status_code': 200, 'detail': f"The item was ranked with {item.tier} tier."}
+
+
+@service_router.get("/tierlist/all", response_model=list[schemas.TierList])
 def get_all_tierlists(user=Depends(manager), db=Depends(get_db)):
-    return db.query(models.TierList).where(models.TierList.user_id == user.id).all()
+    return db_actions.get_all_tierlists(user.id, db)
 
 
-@router.get("/tierlist/{template_id}", response_model=schemas.Template)
+@service_router.get("/tierlist/get/{template_id}", response_model=schemas.TierList)
 def get_tierlist(template_id: int, user=Depends(manager), db=Depends(get_db)):
-    return db.query(models.TierList).where(models.TierList.user_id == user.id
-                                           and models.TierList.template_id == template_id).first()
+    result = db_actions.get_tierlist(template_id, user.id, db)
+    if result:
+        return result
+    else:
+        raise HTTPException(status_code=404, detail="The tierlist for this template and user does not exist.")
 
 
-# Create tier list
-@router.post("/tier_list/create", response_model=schemas.TierList)
-def create_item(tier_list: schemas.TierListCreate, db=Depends(get_db)):
-    existing_tier_list = db.query(models.TierList).filter(
-        models.TierList.user_id == tier_list.user_id
-    ).first()
+@service_router.post("/tierlist/create/{template_id}", response_model=schemas.TierList)
+def create_tierlist(template_id: int, user=Depends(manager), db=Depends(get_db)):
+    _tierlist = db_actions.get_tierlist(template_id, user.id, db)
 
-    if existing_tier_list:
-        # If the tier list already exists, return it
-        return existing_tier_list
+    if _tierlist:
+        return _tierlist
 
-    tier_list = schemas.TierListCreate(template=tier_list.template)
-    db.add(tier_list)
-    db.commit()
-    return tier_list
+    new_tierlist = db_actions.create_tierlist(template_id, user.id, db)
+    return schemas.TierList.from_orm(new_tierlist)
 
 
-@router.get("/fact")
+@service_router.get("/fact")
 def get_fact():
     url = f"https://uselessfacts.jsph.pl/api/v2/facts/today?language={'en'}"
     headers = {"Accept": "application/json"}
