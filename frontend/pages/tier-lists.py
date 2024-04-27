@@ -1,77 +1,41 @@
 import streamlit as st
-import pandas as pd
 from menu import menu_with_redirect
 
-st.set_page_config(page_title="Tier List", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Tier List", layout="wide")
+menu_with_redirect()
 
-def move_item_up(tier, item):
-    prev_tier = None
-    for cur_tier in st.session_state.tiers.keys():
-        if tier == cur_tier and prev_tier:
-            st.session_state.tiers[prev_tier].append(item)
-            st.session_state.tiers[tier].remove(item)
-            break
-        prev_tier = cur_tier
-
-
-def move_item_down(tier, item):
-    prev_tier = None
-    for cur_tier in st.session_state.tiers.keys():
-        if tier == prev_tier:
-            st.session_state.tiers[cur_tier].append(item)
-            st.session_state.tiers[tier].remove(item)
-            break
-        prev_tier = cur_tier
-
-
-def tier_manager():
-    for tier, items in st.session_state.tiers.items():
-
-        st.write(f"## {tier} Tier")
-        if not len(items):
-            continue
-        columns = st.columns(len(items))
-        for col, item in zip(columns, items):
-            with col:
-                with st.popover(f"{item}", use_container_width=False):
-                    delete = st.button("Delete", key=f"{tier}_{item}_delete")
-                    # edit = st.button("Edit", key=f"{tier}_{item}_edit")
-                    move_up = st.button("Move Up", key=f"{tier}_{item}_move_up")
-                    move_down = st.button("Move Down", key=f"{tier}_{item}_move_down")
-                    if delete:
-                        st.session_state.tiers[tier].remove(item)
-                        st.rerun()
-                    if move_up:
-                        move_item_up(tier, item)
-                        st.rerun()
-                    if move_down:
-                        move_item_down(tier, item)
-                        st.rerun()
-
-
-if 'template' in st.query_params.keys():
-    st.query_params["template"]
-else:
-    st.write("no template param")
-
-if "tiers" not in st.session_state:   # TODO: Try multiselect as tier-list
-    st.session_state.tiers = {
-        "S": [1, 2, 3, 4],
-        "A": [5],
-        "B": [],
-        "C": [],
-        "F": []
+sample_tier_lists = [
+    {'name': 'Minecraft food',
+     'id': 1,
+     'pic': 'https://random.imagecdn.app/500/500'},
+    {'name': 'Magnit food',
+     'id': 2,
+     'pic': 'https://random.imagecdn.app/540/500'},
+    {'name': 'Пятерочка food',
+     'id': 3,
+     'pic': 'https://random.imagecdn.app/1000/1000'},
+    {'name': 'Kazakh food',
+     'id': 4,
+     'pic': 'https://random.imagecdn.app/501/500'
     }
+]
 
-data = []
-for tier, items in st.session_state.tiers.items():
-    items_list = list(items)
-    data.append({"Tier": tier, "Items": items_list})
 
-df = pd.DataFrame(data)
-st.dataframe(df, hide_index=True, use_container_width=True)
+def print_all_tier_lists(tier_lists_):
 
-with st.sidebar:
-    menu_with_redirect()
-    tier_manager()
+    for i in range(0, len(tier_lists_), 5):
+        col1, col2, col3, col4, col5 = st.columns(5)
+        cols = [col1, col2, col3, col4, col5]
+        for j in range(0, 5):
+            if i + j < len(tier_lists_):
+                with cols[j]:
+                    with st.container(border=True):
+                        st.image(tier_lists_[i + j]['pic'])
+                        button = st.button(tier_lists_[i + j]['name'])
+                        if button:
+                            st.session_state['ID'] = tier_lists_[i + j]['id']
+                            st.switch_page('pages/tier-list.py')
+
+
+print_all_tier_lists(sample_tier_lists)
 

@@ -1,26 +1,20 @@
 import streamlit as st
-import extra_streamlit_components as stx
-from menu import menu
+from menu import menu_with_redirect_auth
+from cookies import login
 from requests import Session
 
 session = Session()
 
 API_URL = "http://127.0.0.1:8000"
 
+st.set_page_config(layout='centered')
 st.title("Login/Register")
-login, register = st.tabs(["Login", "Register"])
+login_tab, register_tab = st.tabs(["Login", "Register"])
 
-
-@st.cache_resource(experimental_allow_widgets=True)
-def get_manager():
-    return stx.CookieManager()
-
-
-cookie_manager = get_manager()
 
 skip = True
 
-with login:
+with login_tab:
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
     login_button = st.button("Login")
@@ -28,9 +22,7 @@ with login:
     if login_button:
 
         if skip:
-            st.session_state['authentication_status'] = True
-            st.session_state['user'] = {'name': 'Default username'}
-            st.switch_page('pages/account.py')
+            login('some-token')
         else:
             login_response = session.post(
                 API_URL + "/users/login", json={"username": username, "password": password}
@@ -47,7 +39,7 @@ with login:
                 st.error(login_response)
                 st.error(login_response.json())
 
-with register:
+with register_tab:
     name = st.text_input("Name", key=2)
     email = st.text_input("Email", key=3)
     password = st.text_input("Password", type="password", key=4)
@@ -67,4 +59,4 @@ with register:
             st.error(register_response)
             st.error(register_response.json())
 
-menu()
+menu_with_redirect_auth()
