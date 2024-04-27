@@ -25,3 +25,9 @@ To generate sample data use:
 cd backend
 poetry run python database_populate.py
 ```
+
+To run frontend:
+
+```shell
+streamlit run frontend/app.py
+```
