@@ -11,6 +11,10 @@ cookie_manager = get_manager()
 cookies = cookie_manager.get_all()
 
 
+def get_token():
+    return cookies.get('token')
+
+
 def update_cookies():
     st.session_state['cookies'] = cookies
     if 'token' in st.session_state['cookies']:

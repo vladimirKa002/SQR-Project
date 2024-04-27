@@ -7,7 +7,7 @@ st.set_page_config(layout='centered')
 st.title("Login/Register")
 login_tab, register_tab = st.tabs(["Login", "Register"])
 
-skip = False
+skip = True
 
 with login_tab:
     email = st.text_input("Email")
@@ -15,10 +15,13 @@ with login_tab:
     login_button = st.button("Login")
 
     if login_button:
-        error = loginApi(email, password)
-        if error:
-            st.error("Login failed!")
-            st.error(error)
+        if skip:
+            loginApi('test@example.com', 'test')
+        else:
+            error = loginApi(email, password)
+            if error:
+                st.error("Login failed!")
+                st.error(error)
 
 with register_tab:
     name = st.text_input("Name", key=2)

@@ -73,15 +73,6 @@ def get_all_tierlists(user=Depends(manager), db=Depends(get_db)):
 
 @service_router.get("/tierlist/get/{template_id}", response_model=schemas.TierList)
 def get_tierlist(template_id: int, user=Depends(manager), db=Depends(get_db)):
-    result = db_actions.get_tierlist(template_id, user.id, db)
-    if result:
-        return result
-    else:
-        raise HTTPException(status_code=404, detail="The tierlist for this template and user does not exist.")
-
-
-@service_router.post("/tierlist/create/{template_id}", response_model=schemas.TierList)
-def create_tierlist(template_id: int, user=Depends(manager), db=Depends(get_db)):
     _tierlist = db_actions.get_tierlist(template_id, user.id, db)
 
     if _tierlist:
