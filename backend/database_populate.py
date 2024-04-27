@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 # Import settings from config.py
 from config import DEFAULT_SETTINGS
 from models import Item, Template, template_item
-
+import random
 
 def get_file_names(directory):
     """Return a list of file names in the given directory."""
@@ -33,6 +33,10 @@ def print_structure():
         print(f"Table Name: {table.name}")
         for column in table.c:
             print(f"  Column Name: {column.name} - Type: {column.type}")
+
+
+def generate_random_to_product_index(n):
+    return random.choice(range(n + 1))
 
 
 # Create an engine that stores data in the local directory's app.db file.
@@ -91,14 +95,30 @@ for file_name, description, price in products:
     item_list.append(item)
     session.add(item)
 
+template_info = [
+    ('Cup and Cake Cafe', 'cupncake.png'),
+    ('Fresh Brew Coffee', 'fresh.png'),
+    ('Super Fresh', 'fresh.png')
+]
+template_info_list = []
+image_cafes_directory = 'images/cafes/'
 
-template1 = Template(name='Basic Template', picture=b'basictemplatepic')
+for template_info_item in template_info:
+    full_path = os.path.join(image_cafes_directory, template_info_item[1])
+    picture_blob = convertToBinaryData(full_path)
+    template = Template(name=template_info_item[0], picture=picture_blob)
+    session.add(template)
+    template_info_list.append(template)
 
-
-session.add_all([template1])
 session.commit()
 # Template items mapping (association table)
-session.execute(template_item.insert().values(template_id=template1.id, item_id=item_list[0].id))
+
+for i in range(0, 3):
+    # insert random items to template
+    for j in range(0, 10):
+        print(i, j)
+        print(template_info_list[i].id, item_list[generate_random_to_product_index(len(products)-1)].id)
+        session.execute(template_item.insert().values(template_id=template_info_list[i].id, item_id=item_list[generate_random_to_product_index(len(products)-1)].id))
 # session.execute(template_item.insert().values(template_id=template1.id, item_id=item_list[2]))
 session.commit()
 
