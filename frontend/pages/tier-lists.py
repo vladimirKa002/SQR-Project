@@ -1,5 +1,6 @@
 import streamlit as st
 from menu import menu_with_redirect
+from APIs import getTemplateAllApi
 
 st.set_page_config(page_title="Tier List", layout="wide")
 menu_with_redirect()
@@ -37,5 +38,7 @@ def print_all_tier_lists(tier_lists_):
                             st.switch_page('pages/tier-list.py')
 
 
-print_all_tier_lists(sample_tier_lists)
+templates = getTemplateAllApi()
+print_all_tier_lists(templates)
+# print_all_tier_lists(sample_tier_lists)
 

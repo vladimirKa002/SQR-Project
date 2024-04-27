@@ -50,6 +50,7 @@ def print_tier_list(objects_, tier_list_):
                                     move_up = st.button("Move Up", key=f"{tier}{i + j}_move_up")
                                     move_down = st.button("Move Down", key=f"{tier}{i + j}_move_down")
                                     if delete:
+                                        st.session_state['objects'].append(items[i + j])
                                         st.session_state['tiers'][tier].remove(items[i + j])
                                         st.rerun()
                                     if move_up:

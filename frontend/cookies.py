@@ -19,11 +19,11 @@ def update_cookies():
         st.session_state['authentication_status'] = False
 
 
-def login(token):
+def login_cookie(token):
     cookie_manager.set('token', token)
 
 
-def logout():
+def logout_cookie():
     cookie_manager.delete('token')
     del st.session_state['user']
 

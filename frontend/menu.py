@@ -1,12 +1,12 @@
 import streamlit as st
-from cookies import logout, update_cookies
+from cookies import logout_cookie, update_cookies
 
 
 def authenticated_menu():
     st.sidebar.page_link("pages/account.py", label="Account")
     st.sidebar.page_link("pages/tier-lists.py", label="Tier Lists")
     if st.sidebar.button('Logout'):
-        logout()
+        logout_cookie()
 
 
 def unauthenticated_menu():
