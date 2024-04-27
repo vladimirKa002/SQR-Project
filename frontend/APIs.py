@@ -1,5 +1,6 @@
 from requests import Session
-from cookies import login_cookie
+from cookies import login_cookie, get_token
+import streamlit as st
 
 session = Session()
 
@@ -15,89 +16,114 @@ def loginApi(email, password):
         # "client_id": "",
         # "client_secret": ""
     }
-    login_response = session.post(
+    response = session.post(
         API_URL + "/auth/token", data=data
     )
 
-    if login_response.status_code == 200:
-        token = login_response.json()["access_token"]
+    if response.status_code == 200:
+        token = response.json()["access_token"]
         login_cookie(token)
     else:
-        return login_response.json()
+        st.error(response)
+        st.error(response.json())
+        st.stop()
 
 
 def registerApi(username, email, password):
-    register_response = session.post(
+    response = session.post(
         API_URL + "/auth/register",
         json={"name": username, "email": email, "password": password},
     )
 
-    if register_response.status_code == 200:
+    if response.status_code == 200:
         loginApi(email, password)
     else:
-        return register_response.json()
+        st.error(response)
+        st.error(response.json())
+        st.stop()
 
 
 def getTemplateAllApi():
     response = session.get(
         API_URL + '/template/all'
     )
-    return response.json()
+    if response.status_code == 200:
+        return response.json()
+    st.error(response)
+    st.error(response.json())
+    st.stop()
 
 
 def getTemplateByIdApi(id):
     response = session.get(
         API_URL + f'/template/get/{id}'
     )
-    return response.json()
+    if response.status_code == 200:
+        return response.json()
+    st.error(response)
+    st.error(response.json())
+    st.stop()
 
 
 def getFact():
     response = session.get(
         API_URL + '/fact'
     )
-    return response.json()
+    if response.status_code == 200:
+        return response.json()
+    st.error(response)
+    st.error(response.json())
+    st.stop()
 
 
 def getTierListsAllApi():
+    token = get_token()
     response = session.get(
-        API_URL + '/tierlist/all'
+        API_URL + '/tierlist/all', headers={
+            'Authorization': f'Bearer {token}'
+        }
     )
-    return response.json()
+    if response.status_code == 200:
+        return response.json()
+    st.error(response)
+    st.error(response.json())
+    st.stop()
 
 
 def getTierListByIdApi(id):
+    token = get_token()
     response = session.get(
-        API_URL + f'/tierlist/get/{id}'
+        API_URL + f'/tierlist/get/{id}', headers={
+            'Authorization': f'Bearer {token}'
+        }
     )
-    return response.json()
+    if response.status_code == 200:
+        return response.json()
+    st.error(response)
+    st.error(response.json())
+    st.stop()
 
 
 def getItemByIdApi(id):
     response = session.get(
         API_URL + f'/item/get/{id}'
     )
-    return response.json()
-
-
-def creteItemApi(name, desc, price, picture):
-    data = {
-        'name': name,
-        'description': desc,
-        'price': price,
-        "picture": picture
-    }
-    response = session.post(
-        API_URL + f'/item/get/{id}', json=data
-    )
-    if response.status_code != 200:
+    if response.status_code == 200:
         return response.json()
+    st.error(response)
+    st.error(response.text)
+    st.stop()
 
 
 def rankItemApi(item_id, tierlist_id, tier):
+    token = get_token()
     response = session.post(
-        API_URL + f'/item/rank/?item_id={item_id}&tierlist_id={tierlist_id}&tier={tier}'
+        API_URL + f'/item/rank/?item_id={item_id}&tierlist_id={tierlist_id}&tier={tier}', headers={
+            'Authorization': f'Bearer {token}'
+        }
     )
-
-    if response.status_code != 200:
+    if response.status_code == 200:
         return response.json()
+    st.error(response)
+    st.error(response.json())
+    st.stop()
