@@ -1,2 +1,3 @@
 .idea
-backend/foodtierlist.db
+backend/__pycache__/
+backend/app.db

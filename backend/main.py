@@ -1,39 +1,56 @@
-import fastapi as _fastapi
-import fastapi.security as _security
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_login.exceptions import InvalidCredentialsException
+from sqlalchemy import inspect
 
-import sqlalchemy.orm as _orm
+from config import DEFAULT_SETTINGS
+from schemas import UserCreate, UserResponse
+from database import get_db, Base, engine
+from database_actions import get_user, create_user
+from security import manager, verify_password
 
-import services as _services, schemas as _schemas
-
-app = _fastapi.FastAPI()
-
-
-@app.post("/users/register")
-async def register(
-        user: _schemas.UserCreate, db: _orm.Session = _fastapi.Depends(_services.get_db)
-):
-    db_user = await _services.get_user_by_email(user.email, db)
-    if db_user:
-        raise _fastapi.HTTPException(status_code=400, detail="Email already in use")
-
-    user = await _services.create_user(user, db)
-
-    return await _services.create_token(user)
+from service import service_router
 
 
-@app.post("/users/login")
-async def login(
-        form_data: _security.OAuth2PasswordRequestForm = _fastapi.Depends(),
-        db: _orm.Session = _fastapi.Depends(_services.get_db),
-):
-    user = await _services.authenticate_user(form_data.username, form_data.password, db)
-
-    if not user:
-        raise _fastapi.HTTPException(status_code=401, detail="Invalid Credentials")
-
-    return await _services.create_token(user)
+app = FastAPI()
+app.include_router(service_router)
 
 
-@app.get("/users/profile", response_model=_schemas.User)
-async def get_user(user: _schemas.User = _fastapi.Depends(_services.get_current_user)):
-    return user
+@app.on_event("startup")
+def setup():
+    print("Creating db tables...")
+    Base.metadata.create_all(bind=engine)
+    inspection = inspect(engine)
+    print(f"Created {len(inspection.get_table_names())} tables: {inspection.get_table_names()}")
+
+
+@app.post("/auth/register")
+def register(user: UserCreate, db=Depends(get_db)):
+    if get_user(user.email) is not None:
+        raise HTTPException(status_code=400, detail="A user with this email already exists")
+    else:
+        db_user = create_user(db, user)
+        return UserResponse(id=db_user.id, email=db_user.email, name=db_user.name)
+
+
+@app.post(DEFAULT_SETTINGS.token_url)
+def login(data: OAuth2PasswordRequestForm = Depends()):
+    email = data.username
+    password = data.password
+
+    user = get_user(email)  # we are using the same function to retrieve the user
+    if user is None:
+        raise InvalidCredentialsException  # you can also use your own HTTPException
+    elif not verify_password(password, user.password):
+        raise InvalidCredentialsException
+
+    access_token = manager.create_access_token(
+        data=dict(sub=user.email)
+    )
+    return {'access_token': access_token, 'token_type': 'Bearer'}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run("main:app")

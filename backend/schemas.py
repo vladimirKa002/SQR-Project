@@ -1,53 +1,52 @@
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel, EmailStr
 
 
-class _UserBase(BaseModel):
+class UserCreate(BaseModel):
     name: str
-    email: str
-
-
-class UserCreate(_UserBase):
+    email: EmailStr
     password: str
 
-    class Config:
-        orm_mode = True
 
-
-class User(_UserBase):
+class UserResponse(BaseModel):
     id: int
+    name: str
+    email: str
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
 
-
-class Item(BaseModel):
-    id: int
+class ItemCreate(BaseModel):
     name: str
     description: str
     price: int
+    picture: bytes
+
+
+class Item(ItemCreate):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TierListItem(BaseModel):
+    item_id: int
+    tier: str
+
+
+class TemplateCreate(BaseModel):
+    name: str
+    picture: bytes
+    items: list[int]
 
 
 class Template(BaseModel):
     id: int
     name: str
-    description: str
+    picture: bytes
+    items: list[Item] = []
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TierList(BaseModel):
     id: int
-    user_id: int
-    template_id: int
-
-
-class TemplateItem(BaseModel):
-    template_id: int
-    item_id: int
-
-
-class TierListItem(BaseModel):
-    tier_list_id: int
-    item_id: int
-
-
-class Tier(BaseModel):
-    tier: str
+    template: Template
+    items: list[TierListItem] = []
+    model_config = ConfigDict(from_attributes=True)
