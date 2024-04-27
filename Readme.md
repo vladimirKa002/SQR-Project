@@ -23,5 +23,5 @@ Access api endpoints via `http://127.0.0.1:8000/docs`.
 To generate sample data use:
 ```
 cd backend
-poetry run python script.py
+poetry run python database_populate.py
 ```
