@@ -26,30 +26,6 @@ def convertToBinaryData(filename):
         blobData = file.read()
     return blobData
 
-def generate_random_items(n):
-    """Generate n random items with a simple image."""
-    colors = {
-        'Red': (255, 0, 0),
-        'Blue': (0, 0, 255),
-        'Green': (0, 255, 0),
-        'Yellow': (255, 255, 0),
-        'Black': (0, 0, 0),
-        'White': (255, 255, 255)
-    }
-    sizes = ['small', 'medium', 'large', 'extra large']
-
-    picture_list = get_file_names('images')
-    for _ in range(n):
-        color_name, rgb = random.choice(list(colors.items()))
-        size = random.choice(sizes)
-        base_price = 100 
-        name = f"{color_name} Pizza"
-        description = f"A {size} {color_name.lower()} pizza"
-        price = base_price + random.randint(-20, 50)  # Randomize price a bit
-        picture = convertToBinaryData('images/' + str(random.choice(picture_list)))
-    
-        yield Item(name=name, description=description, price=price, picture=picture)
-
 
 def print_structure():
     meta = MetaData()
@@ -72,19 +48,54 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
-# Items
+products = [
+    ('apple.png', 'A fresh red apple, crisp and sweet.', 150),
+    ('bread.png', 'A loaf of freshly baked bread, soft and warm.', 120),
+    ('cabbage.png', 'A head of green cabbage, rich in nutrients.', 100),
+    ('cake.png', 'A slice of chocolate cake, rich and moist.', 250),
+    ('cantaloupe.png', 'A ripe cantaloupe, sweet and juicy.', 200),
+    ('carrots.png', 'A bunch of vibrant, fresh carrots.', 110),
+    ('chicken.png', 'A whole roasted chicken, tender and flavorful.', 350),
+    ('choco-chip.png', 'Chocolate chip cookies, homemade and delicious.', 180),
+    ('coffee-glass.png', 'A glass of iced coffee, chilled and refreshing.', 220),
+    ('cucumber-slice.png', 'Sliced cucumber, cool and crunchy.', 100),
+    ('eggplant.png', 'A fresh eggplant, smooth and shiny.', 150),
+    ('figs.png', 'Fresh figs, sweet and succulent.', 250),
+    ('french-fries.png', 'Crispy French fries, golden and salted.', 130),
+    ('fried-chicken.png', 'Crispy fried chicken, juicy and spicy.', 300),
+    ('grapefruit.png', 'A fresh grapefruit, tart and juicy.', 160),
+    ('hot-dog.png', 'A classic hot dog, fully loaded with toppings.', 190),
+    ('kebab.png', 'A skewer of kebab, grilled to perfection.', 320),
+    ('kiwi.png', 'A ripe kiwi, tangy and sweet.', 140),
+    ('macaron.png', 'Colorful macarons, light and airy.', 210),
+    ('mushrooms.png', 'Fresh mushrooms, earthy and aromatic.', 130),
+    ('pancake.png', 'Stack of pancakes, fluffy and served with syrup.', 180),
+    ('paprika.png', 'Bright red paprika, spicy and flavorful.', 150),
+    ('pineapple.png', 'A fresh pineapple, tropical and sweet.', 200),
+    ('pizza.png', 'A slice of pepperoni pizza, cheesy and savory.', 250),
+    ('pomegranate.png', 'Fresh pomegranate, tart and juicy seeds.', 280),
+    ('spaghetti.png', 'Plate of spaghetti, topped with marinara sauce.', 320),
+    ('strawberry-milk.png', 'Strawberry milk, creamy and sweet.', 170),
+    ('strawberry.png', 'Fresh strawberries, bright and sweet.', 160),
+    ('taco.png', 'A beef taco, spicy and filled with fresh vegetables.', 220),
+    ('tomato-slice.png', 'Sliced tomatoes, ripe and juicy.', 110),
+    ('watermelon.png', 'A slice of watermelon, refreshing and sweet.', 130)
+]
+image_directory = 'images/'
 item_list = []
-item_generator = generate_random_items(15)
-for item in item_generator:
-    print(f"Item: {item.name}, Description: {item.description}, Price: {item.price}")
+# Process each image file, description, and price triplet, creating an Item for each
+for file_name, description, price in products:
+    full_path = os.path.join(image_directory, file_name)
+    picture_blob = convertToBinaryData(full_path)
+    item_name = file_name[:-4].replace('-', ' ').replace('_', ' ').title()
+    item = Item(name=item_name, description=description, price=price, picture=picture_blob)
     item_list.append(item)
-# Templates
-print(item_list)
+    session.add(item)
+
+
 template1 = Template(name='Basic Template', picture=b'basictemplatepic')
 
 
-# Insert users, items, and tiers into the database
-session.add_all(item_list)
 session.add_all([template1])
 session.commit()
 # Template items mapping (association table)
