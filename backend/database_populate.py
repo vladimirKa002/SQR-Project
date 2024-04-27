@@ -1,3 +1,4 @@
+import base64
 import os
 
 from sqlalchemy import create_engine, MetaData
@@ -21,6 +22,7 @@ def convertToBinaryData(filename):
     # Convert digital data to binary format
     with open(filename, 'rb') as file:
         blobData = file.read()
+        blobData = base64.b64encode(blobData)
     return blobData
 
 
