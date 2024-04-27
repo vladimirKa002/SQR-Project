@@ -1,15 +1,12 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from models import User, Item, Template, TierList, TierListItem, Tier, template_item
+import os
+
 from sqlalchemy import create_engine, MetaData
-from sqlalchemy.engine.reflection import Inspector
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
 # Import settings from config.py
 from config import DEFAULT_SETTINGS
-import random
-from PIL import Image
-import io
-import os
+from models import Item, Template, template_item
 
 
 def get_file_names(directory):
