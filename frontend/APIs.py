@@ -24,6 +24,7 @@ def loginApi(email, password):
         token = response.json()["access_token"]
         login_cookie(token)
     else:
+        st.error(loginApi)
         st.error(response)
         st.error(response.json())
         st.stop()
@@ -38,6 +39,7 @@ def registerApi(username, email, password):
     if response.status_code == 200:
         loginApi(email, password)
     else:
+        st.error(registerApi)
         st.error(response)
         st.error(response.json())
         st.stop()
@@ -49,6 +51,7 @@ def getTemplateAllApi():
     )
     if response.status_code == 200:
         return response.json()
+    st.error(getTemplateAllApi)
     st.error(response)
     st.error(response.json())
     st.stop()
@@ -60,6 +63,7 @@ def getTemplateByIdApi(id):
     )
     if response.status_code == 200:
         return response.json()
+    st.error(getTemplateByIdApi)
     st.error(response)
     st.error(response.json())
     st.stop()
@@ -71,6 +75,7 @@ def getFact():
     )
     if response.status_code == 200:
         return response.json()
+    st.error(getFact)
     st.error(response)
     st.error(response.json())
     st.stop()
@@ -85,6 +90,7 @@ def getTierListsAllApi():
     )
     if response.status_code == 200:
         return response.json()
+    st.error(getTierListsAllApi)
     st.error(response)
     st.error(response.json())
     st.stop()
@@ -99,6 +105,7 @@ def getTierListByIdApi(id):
     )
     if response.status_code == 200:
         return response.json()
+    st.error("getTierListByIdApi")
     st.error(response)
     st.error(response.json())
     st.stop()
@@ -110,6 +117,7 @@ def getItemByIdApi(id):
     )
     if response.status_code == 200:
         return response.json()
+    st.error("getItemByIdApi")
     st.error(response)
     st.error(response.text)
     st.stop()
@@ -127,6 +135,7 @@ def rankItemApi(item_id, tierlist_id, tier):
         }
     )
     if response.status_code != 200:
+        st.error("rankItemApi")
         st.error(response)
         st.error(response.json())
         st.stop()
