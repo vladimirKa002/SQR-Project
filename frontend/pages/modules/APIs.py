@@ -1,5 +1,5 @@
 from requests import Session
-from cookies import login_cookie, get_token
+from .cookies.cookies import login_cookie, get_token
 import streamlit as st
 
 session = Session()
@@ -27,7 +27,6 @@ def loginApi(email, password):
         st.error(loginApi)
         st.error(response)
         st.error(response.json())
-        # st.stop()
 
 
 def registerApi(username, email, password):
@@ -42,7 +41,6 @@ def registerApi(username, email, password):
         st.error(registerApi)
         st.error(response)
         st.error(response.json())
-        # st.stop()
 
 
 def getTemplateAllApi():
@@ -70,15 +68,14 @@ def getTemplateByIdApi(id):
 
 
 def getFact():
-    response = session.get(
-        API_URL + '/fact'
-    )
-    if response.status_code == 200:
+    try:
+        response = session.get(
+            API_URL + '/fact'
+        )
         return response.json()
-    st.error(getFact)
-    st.error(response)
-    st.error(response.json())
-    st.stop()
+    except Exception as e:
+        print(e)
+        return "Today is not Day phrase"
 
 
 def getTierListsAllApi():

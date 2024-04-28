@@ -1,6 +1,6 @@
 import streamlit as st
-from cookies import logout_cookie, update_cookies
-from APIs import getFact
+from .cookies.cookies import logout_cookie, update_cookies
+from .APIs import getFact
 from PIL import Image
 import io
 import base64

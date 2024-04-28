@@ -1,5 +1,5 @@
 import streamlit as st
-import menu
+from pages.modules import menu
 
 # st.set_page_config(layout='wide', page_title="Inno Food Tier list")
 st.title("Inno Food Tier List")
