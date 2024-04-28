@@ -1,0 +1,38 @@
+from fastapi import Depends, HTTPException, APIRouter
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_login.exceptions import InvalidCredentialsException
+
+from backend.config import DEFAULT_SETTINGS
+from backend.security import manager, verify_password
+from ..database.db import get_db
+from ..database.db_actions import get_user, create_user
+from ..database.schemas import UserCreate, UserResponse
+
+
+auth_router = APIRouter()
+
+
+@auth_router.post("/auth/register")
+def register(user: UserCreate, db=Depends(get_db)):
+    if get_user(user.email) is not None:
+        raise HTTPException(status_code=400, detail="A user with this email already exists")
+    else:
+        db_user = create_user(db, user)
+        return UserResponse(id=db_user.id, email=db_user.email, name=db_user.name)
+
+
+@auth_router.post(DEFAULT_SETTINGS.token_url)
+def login(data: OAuth2PasswordRequestForm = Depends()):
+    email = data.username
+    password = data.password
+
+    user = get_user(email)  # we are using the same function to retrieve the user
+    if user is None:
+        raise InvalidCredentialsException  # you can also use your own HTTPException
+    elif not verify_password(password, user.password):
+        raise InvalidCredentialsException
+
+    access_token = manager.create_access_token(
+        data=dict(sub=user.email)
+    )
+    return {'access_token': access_token, 'token_type': 'Bearer'}

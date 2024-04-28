@@ -1,0 +1,45 @@
+name: inno-food-tierlist
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Run image
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: '1.7.0'
+      - name: Install dependencies
+        run: poetry install
+
+      : # - name: Run flake8
+      : #  run: poetry run flake8 .
+
+      : # - name: Run cyclomatic complexity check
+      : #   run: poetry run flake8 --max-complexity 10 .
+
+      : # - name: Run unit tests with coverage
+      : #   run: poetry run pytest --cov=backend --cov-branch --cov-report=term tests/unit --cov-fail-under=60
+
+      : # - name: Run e2e tests
+      : #   run: poetry run pytest tests/e2e
+
+      : # - name: Run mutation tests
+      : #   run: poetry run pytest tests/mutation
+
+      : # - name: Run fuzz tests
+      : #   run: poetry run pytest tests/fuzz
+
+      : # - name: Run stress tests
+      : #   run: poetry run pytest tests/stress
+
+      : # - name: Run ui tests with coverage
+      : #   run: poetry run pytest --cov=frontend --cov-branch --cov-report=term tests/ui --cov-fail-under=60
+
+      : # - name: Run bandit
+      : #   run: poetry run bandit backend/*.py

@@ -1,11 +1,12 @@
 from typing import Optional
 
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
-from models import *
-from database import DBContext
-from schemas import UserCreate
-from security import hash_password, manager
+from .models import *
+from .db import DBContext
+from .schemas import UserCreate
+from ..security import hash_password, manager
 
 
 @manager.user_loader()
@@ -43,7 +44,7 @@ def get_all_templates(db: Session) -> list[Template]:
 
 
 def get_template(template_id: int, db: Session) -> Template:
-    return db.query(Template).where(Template.id == template_id).first()
+    return db.query(Template).filter_by(id=template_id).first()
 
 
 def create_item(name: str, description: str, price: int, picture: BLOB, db: Session) -> Item:
@@ -54,8 +55,7 @@ def create_item(name: str, description: str, price: int, picture: BLOB, db: Sess
 
 
 def get_tierlist_item(item_id: int, tier_list_id: int, db: Session) -> TierListItem:
-    return db.query(TierListItem).where(TierListItem.item_id == item_id
-                                        and TierListItem.tier_list_id == tier_list_id).first()
+    return db.query(TierListItem).filter(and_(TierListItem.item_id == item_id, TierListItem.tier_list_id == tier_list_id)).first()
 
 
 def rank_tierlist_item(item_id: int, tier_list_id: int, tier: str, db: Session) -> TierListItem:
@@ -77,19 +77,19 @@ def delete_tierlist_item(item_id: int, tier_list_id: int, db: Session) -> None:
 
 
 def get_item(item_id: int, db: Session) -> Item:
-    return db.query(Item).where(Item.id == item_id).first()
+    return db.query(Item).filter_by(id=item_id).first()
 
 
 def get_all_tierlists(user_id: int, db: Session) -> list[TierList]:
-    return db.query(TierList).where(TierList.user_id == user_id).all()
+    return db.query(TierList).filter_by(user_id=user_id).all()
 
 
 def get_tierlist(template_id: int, user_id: int, db: Session) -> Item:
-    return db.query(TierList).where(TierList.template_id == template_id and TierList.user_id == user_id).first()
+    return db.query(TierList).filter(and_(TierList.template_id == template_id, TierList.user_id == user_id)).first()
 
 
 def get_tierlist_by_id(tierlist_id: int, db: Session) -> Item:
-    return db.query(TierList).where(TierList.id == tierlist_id).first()
+    return db.query(TierList).filter_by(id=tierlist_id).first()
 
 
 def create_tierlist(template_id: int, user_id: int, db: Session) -> TierList:

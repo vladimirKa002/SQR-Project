@@ -15,7 +15,7 @@ def move_item_up(tier, item):
         if tier == cur_tier and prev_tier:
             # st.session_state.tiers[prev_tier].append(item)
             # st.session_state.tiers[tier].remove(item)
-            rankItemApi(item['id'], st.query_params['id'], prev_tier)
+            rankItemApi(item['id'], tierlist_id, prev_tier)
             break
         prev_tier = cur_tier
 
@@ -26,7 +26,7 @@ def move_item_down(tier, item):
         if tier == prev_tier:
             # st.session_state.tiers[cur_tier].append(item)
             # st.session_state.tiers[tier].remove(item)
-            rankItemApi(item['id'], st.query_params['id'], cur_tier)
+            rankItemApi(item['id'], tierlist_id, cur_tier)
             break
         prev_tier = cur_tier
 
@@ -34,13 +34,13 @@ def move_item_down(tier, item):
 def move_item_to_tier(tier, item):
     # st.session_state['tiers'][tier].append(item)
     # st.session_state['objects'].remove(item)
-    rankItemApi(item['id'], st.query_params['id'], tier)
+    rankItemApi(item['id'], tierlist_id, tier)
 
 
 def delete_from_tier(tier, item):
     # st.session_state['objects'].append(item)
     # st.session_state['tiers'][tier].remove(item)
-    rankItemApi(item['id'], st.query_params['id'], '_')
+    rankItemApi(item['id'], tierlist_id, '_')
 
 
 def print_item_card(tier, i, item):
@@ -122,6 +122,7 @@ for item in data['items']:
     getItem = getItemByIdApi(item['item_id'])
     tier_list[item["tier"]].append(getItem)
 
+tierlist_id = data['id']
 item_ids = [item["item_id"] for item in data['items']]
 objects_ = \
     [item for item in data['template']['items'] if item['id'] not in item_ids]

@@ -26,6 +26,13 @@ cd backend
 poetry run python database_populate.py
 ```
 
+To run tests of backend methods:
+```
+cd backend
+poetry run pytest
+```
+
+
 To run frontend:
 
 ```shell

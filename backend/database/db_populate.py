@@ -1,14 +1,15 @@
 import base64
 import os
+import random
 
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Import settings from config.py
-from config import DEFAULT_SETTINGS
-from models import Item, Template, template_item
-import random
+from .models import Item, Template, template_item
+from ..config import DEFAULT_SETTINGS
+
 
 def get_file_names(directory):
     """Return a list of file names in the given directory."""
