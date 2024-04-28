@@ -1,11 +1,12 @@
 import streamlit as st
-from menu import menu_with_redirect_auth
+from menu import menu
 from APIs import loginApi, registerApi
 
 st.title("Login/Register")
 login_tab, register_tab = st.tabs(["Login", "Register"])
 
 skip = False
+
 
 with login_tab:
     email = st.text_input("Email")
@@ -34,4 +35,4 @@ with register_tab:
             st.error("Registration failed!")
             st.error(error)
 
-menu_with_redirect_auth()
+menu.menu_with_redirect_auth()
