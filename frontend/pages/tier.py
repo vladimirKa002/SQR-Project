@@ -2,7 +2,7 @@ import streamlit as st
 from menu import menu_with_redirect, convertImage
 from APIs import getItemByIdApi, getTierListByIdApi, rankItemApi
 
-
+st.title('TierList')
 menu_with_redirect()
 
 if 'id' not in st.query_params:

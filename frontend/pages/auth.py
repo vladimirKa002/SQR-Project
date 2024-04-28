@@ -2,7 +2,6 @@ import streamlit as st
 from menu import menu_with_redirect_auth
 from APIs import loginApi, registerApi
 
-st.set_page_config(layout='centered')
 st.title("Login/Register")
 login_tab, register_tab = st.tabs(["Login", "Register"])
 

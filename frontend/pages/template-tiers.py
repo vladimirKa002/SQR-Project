@@ -2,7 +2,7 @@ import streamlit as st
 from menu import menu_with_redirect, convertImage
 from APIs import getTemplateAllApi
 
-st.set_page_config(page_title="Template Tier Lists", layout="wide")
+st.title("Template Tier Lists")
 menu_with_redirect()
 
 

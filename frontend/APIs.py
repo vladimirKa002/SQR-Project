@@ -27,7 +27,7 @@ def loginApi(email, password):
         st.error(loginApi)
         st.error(response)
         st.error(response.json())
-        st.stop()
+        # st.stop()
 
 
 def registerApi(username, email, password):
@@ -42,7 +42,7 @@ def registerApi(username, email, password):
         st.error(registerApi)
         st.error(response)
         st.error(response.json())
-        st.stop()
+        # st.stop()
 
 
 def getTemplateAllApi():
