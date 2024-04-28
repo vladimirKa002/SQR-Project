@@ -3,13 +3,12 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_login.exceptions import InvalidCredentialsException
 from sqlalchemy import inspect
 
-from config import DEFAULT_SETTINGS
-from schemas import UserCreate, UserResponse
-from database import get_db, Base, engine
-from database_actions import get_user, create_user
-from security import manager, verify_password
-
-from service import service_router
+from .config import DEFAULT_SETTINGS
+from .schemas import UserCreate, UserResponse
+from .database import get_db, Base, engine
+from .database_actions import get_user, create_user
+from .security import manager, verify_password
+from .service import service_router
 
 
 app = FastAPI()
