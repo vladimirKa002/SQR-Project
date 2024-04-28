@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from .models import *
 from .db import DBContext
 from .schemas import UserCreate
-from ..security import hash_password, manager
+from security import hash_password, manager
 
 
 @manager.user_loader()
