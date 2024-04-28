@@ -118,12 +118,15 @@ def getItemByIdApi(id):
 def rankItemApi(item_id, tierlist_id, tier):
     token = get_token()
     response = session.post(
-        API_URL + f'/item/rank/?item_id={item_id}&tierlist_id={tierlist_id}&tier={tier}', headers={
+        API_URL +
+        f'/item/rank/?item_id={item_id}' +
+        f'&tierlist_id={tierlist_id}' +
+        f'&tier={tier}',
+        headers={
             'Authorization': f'Bearer {token}'
         }
     )
-    if response.status_code == 200:
-        return response.json()
-    st.error(response)
-    st.error(response.json())
-    st.stop()
+    if response.status_code != 200:
+        st.error(response)
+        st.error(response.json())
+        st.stop()
