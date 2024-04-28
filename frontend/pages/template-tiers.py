@@ -2,8 +2,17 @@ import streamlit as st
 from menu import menu_with_redirect, convertImage
 from APIs import getTemplateAllApi
 
-st.set_page_config(page_title="Template Tier Lists", layout="wide")
+st.title("Template Tier Lists")
 menu_with_redirect()
+
+
+def print_template_card(template):
+    with st.container(border=True):
+        st.image(convertImage(template['picture']))
+        button = st.button(template['name'])
+        if button:
+            st.session_state['id'] = template['id']
+            st.switch_page('pages/tier.py')
 
 
 def print_all_tier_lists(templates_):
@@ -13,15 +22,8 @@ def print_all_tier_lists(templates_):
         for j in range(0, 5):
             if i + j < len(templates_):
                 with cols[j]:
-                    with st.container(border=True):
-                        st.image(convertImage(templates_[i + j]['picture']))
-                        button = st.button(templates_[i + j]['name'])
-                        if button:
-                            st.session_state['id'] = templates_[i + j]['id']
-                            st.switch_page('pages/tier.py')
+                    print_template_card(templates_[i + j])
 
 
 templates = getTemplateAllApi()
 print_all_tier_lists(templates)
-# print_all_tier_lists(sample_tier_lists)
-

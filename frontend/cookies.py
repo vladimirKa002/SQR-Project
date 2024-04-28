@@ -30,13 +30,3 @@ def login_cookie(token):
 def logout_cookie():
     cookie_manager.delete('token')
     del st.session_state['user']
-
-
-def get_user():
-    if 'cookies' not in st.session_state:
-        st.error("No cookies to find user")
-    elif 'token' not in st.session_state['cookies']:
-        st.error("No token in cookies to find user")
-    else:
-        # TODO: replace with API request
-        st.session_state['user'] = {'name': 'Default username'}

@@ -7,14 +7,17 @@ import base64
 
 
 def authenticated_menu():
-    st.sidebar.page_link("pages/my-tiers.py", label="My Tier Lists")
-    st.sidebar.page_link("pages/template-tiers.py", label="Template Tier Lists")
+    st.sidebar.page_link("pages/my-tiers.py",
+                         label="My Tier Lists")
+    st.sidebar.page_link("pages/template-tiers.py",
+                         label="Template Tier Lists")
     if st.sidebar.button('Logout'):
         logout_cookie()
 
 
 def unauthenticated_menu():
-    st.sidebar.page_link("pages/auth.py", label="Login/Register")
+    st.sidebar.page_link("pages/auth.py",
+                         label="Login/Register")
 
 
 def menu():
