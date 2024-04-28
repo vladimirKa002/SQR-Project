@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from sqlalchemy import inspect
 
-from .database.db import Base, engine
-from .routers.auth import auth_router
-from .routers.service import service_router
+from database.db import Base, engine
+from routers.auth import auth_router
+from routers.service import service_router
 
 
 app = FastAPI()

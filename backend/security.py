@@ -1,5 +1,5 @@
 # https://github.com/MushroomMaula/fastapi_login/tree/master/examples/sqlalchemy
-from .config import DEFAULT_SETTINGS
+from config import DEFAULT_SETTINGS
 from passlib.context import CryptContext
 
 from fastapi_login import LoginManager

@@ -2,11 +2,11 @@ from fastapi import Depends, HTTPException, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_login.exceptions import InvalidCredentialsException
 
-from backend.config import DEFAULT_SETTINGS
-from backend.security import manager, verify_password
-from ..database.db import get_db
-from ..database.db_actions import get_user, create_user
-from ..database.schemas import UserCreate, UserResponse
+from config import DEFAULT_SETTINGS
+from security import manager, verify_password
+from database.db import get_db
+from database.db_actions import get_user, create_user
+from database.schemas import UserCreate, UserResponse
 
 
 auth_router = APIRouter()

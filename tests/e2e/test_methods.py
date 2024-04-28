@@ -1,8 +1,18 @@
 from fastapi.testclient import TestClient
-from backend.main import app
+from backend.main import app, setup
+from backend import config
 
+import unittest
 
-client = TestClient(app)
+class TestEndpoints(unittest.TestCase):
+    def create_app(self):
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+        app.config["TESTING"] = True
+        return app
+
+    def setUp(self):
+        client = TestClient(app)
+        setup(':memory:')
 
 
 def test_get_all_templates():
