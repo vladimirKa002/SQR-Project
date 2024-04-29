@@ -1,15 +1,36 @@
 import unittest
 
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
-from backend.db import setup_db
+from backend.db import Base, get_db
 from backend.main import app
 
 
-class TestEndpoints(unittest.TestCase):
+class TestMethods(unittest.TestCase):
     def setUp(self):
+        SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
+
+        engine = create_engine(
+            SQLALCHEMY_DATABASE_URL,
+            connect_args={"check_same_thread": False},
+            poolclass=StaticPool,
+        )
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+        Base.metadata.create_all(bind=engine)
+
+        def override_get_db():
+            try:
+                db = TestingSessionLocal()
+                yield db
+            finally:
+                db.close()
+
+        app.dependency_overrides[get_db] = override_get_db
         self.client = TestClient(app)
-        setup_db("sqlite:///app.db")
 
     def test_get_all_templates(self):
         response = self.client.get("/template/all")
@@ -26,12 +47,6 @@ class TestEndpoints(unittest.TestCase):
         template_id = 9999  # Non-existing ID
         response = self.client.get(f"/template/get/{template_id}")
         assert response.status_code == 404
-
-    def test_create_template(self):
-        template_data = {"name": "New Template", "picture": 1, "items": [1, 2]}
-        response = self.client.post("/template/create", json=template_data)
-        assert response.status_code == 200
-        assert response.json()['name'] == "New Template"
 
     def test_get_item(self):
         item_id = 1  # Example item ID

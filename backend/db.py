@@ -1,24 +1,14 @@
-from sqlalchemy import create_engine, inspect
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+from config import DEFAULT_SETTINGS
 
 Base = declarative_base()
 
 
-engine = 0
-db_session = 0
-
-
-def setup_db(db_path):
-    global engine, db_session
-    engine = create_engine(db_path, connect_args={"check_same_thread": False})
-    db_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-    print("Creating db tables...")
-    Base.metadata.create_all(bind=engine)
-    inspection = inspect(engine)
-    print(f"Created {len(inspection.get_table_names())} tables: {inspection.get_table_names()}")
+engine = create_engine(DEFAULT_SETTINGS.database_uri, connect_args={"check_same_thread": False})
+db_session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 class DBContext:
