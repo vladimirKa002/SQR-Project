@@ -13,8 +13,7 @@ poetry install
 Run server:
 
 ```
-cd backend
-poetry run python main.py
+poetry run python backend/main.py
 ```
 
 Access api endpoints via `http://127.0.0.1:8000/docs`.
@@ -22,13 +21,11 @@ Access api endpoints via `http://127.0.0.1:8000/docs`.
 
 To generate sample data use:
 ```
-cd backend
-poetry run python database_populate.py
+poetry run python backend/database_populate.py
 ```
 
 To run tests of backend methods:
 ```
-cd backend
 poetry run pytest
 ```
 

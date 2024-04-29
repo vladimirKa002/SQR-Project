@@ -2,11 +2,10 @@ from fastapi import Depends, APIRouter, HTTPException
 
 import requests
 
-from database.db import get_db
-from database.schemas import *
+import db_actions
+from db import get_db
+from schemas import *
 from security import manager
-
-import database.db_actions as db_actions
 
 
 service_router = APIRouter()
