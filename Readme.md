@@ -1,9 +1,5 @@
 # Inno Tier List
 
-...
-
-# Usage
-
 Install poetry dependencies:
 
 ```
