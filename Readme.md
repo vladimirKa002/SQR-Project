@@ -33,5 +33,5 @@ poetry run pytest
 To run frontend:
 
 ```shell
-streamlit run frontend/app.py
+streamlit run frontend/main.py
 ```

@@ -21,7 +21,7 @@ def unauthenticated_menu():
 
 
 def menu():
-    st.sidebar.page_link("app.py", label="Home")
+    st.sidebar.page_link("main.py", label="Home")
     update_cookies()
     if not st.session_state['authentication_status']:
         unauthenticated_menu()

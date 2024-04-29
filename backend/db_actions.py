@@ -55,7 +55,8 @@ def create_item(name: str, description: str, price: int, picture: BLOB, db: Sess
 
 
 def get_tierlist_item(item_id: int, tier_list_id: int, db: Session) -> TierListItem:
-    return db.query(TierListItem).filter(and_(TierListItem.item_id == item_id, TierListItem.tier_list_id == tier_list_id)).first()
+    return db.query(TierListItem).filter(and_(TierListItem.item_id == item_id,
+                                              TierListItem.tier_list_id == tier_list_id)).first()
 
 
 def rank_tierlist_item(item_id: int, tier_list_id: int, tier: str, db: Session) -> TierListItem:
