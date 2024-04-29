@@ -7,8 +7,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Import settings from config.py
-from .models import Item, Template, template_item
-from ..config import DEFAULT_SETTINGS
+from models import Item, Template, template_item
+from config import DEFAULT_SETTINGS
 
 
 def get_file_names(directory):

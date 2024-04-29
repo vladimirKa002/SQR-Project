@@ -3,9 +3,9 @@ from typing import Optional
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
-from .models import *
-from .db import DBContext
-from .schemas import UserCreate
+from models import *
+from db import DBContext
+from schemas import UserCreate
 from security import hash_password, manager
 
 
