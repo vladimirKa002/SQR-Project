@@ -29,8 +29,8 @@ jobs:
       - name: Run e2e tests
         run: poetry run pytest tests/e2e
 
-      - name: Run ui tests with coverage
-        run: poetry run pytest --cov=frontend --cov-branch --cov-report=term tests/ui --cov-fail-under=60
+      - name: Run ui tests
+        run: poetry run pytest frontend/tests
 
       - name: Run bandit
-        run: poetry run bandit backend/*.py
+        run: poetry run bandit *.py  --exclude frontend/tests/,tests

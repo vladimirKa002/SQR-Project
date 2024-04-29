@@ -1,6 +1,6 @@
 import streamlit as st
-from menu import menu_with_redirect, convertImage
-from APIs import getTemplateAllApi
+from pages.modules.menu import menu_with_redirect, convertImage
+from pages.modules.APIs import getTemplateAllApi
 
 st.title("Template Tier Lists")
 menu_with_redirect()

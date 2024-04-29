@@ -1,8 +1,11 @@
 import streamlit as st
-from menu import menu
+from pages.modules.menu import menu
 
-st.set_page_config(layout='wide', page_title="Inno Food Tier list")
+# st.set_page_config(layout='wide', page_title="Inno Food Tier list")
+st.title("Inno Food Tier List")
 menu()
+
+st.markdown("SQR Team Project")
 
 st.markdown("""
     **Inno Food Tier List - A Delicious Journey of Exploration!**
