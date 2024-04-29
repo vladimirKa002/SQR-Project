@@ -29,4 +29,3 @@ def login_cookie(token):
 
 def logout_cookie():
     cookie_manager.delete('token')
-    del st.session_state['user']

@@ -1,5 +1,5 @@
 import streamlit as st
-from pages.modules.menu import menu
+from pages.modules.menu import menu_with_redirect_auth
 from pages.modules.APIs import loginApi, registerApi
 
 st.title("Login/Register")
@@ -34,4 +34,4 @@ with register_tab:
             st.error("Registration failed!")
             st.error(error)
 
-menu.menu_with_redirect_auth()
+menu_with_redirect_auth()

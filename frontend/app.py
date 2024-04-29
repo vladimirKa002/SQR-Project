@@ -1,9 +1,9 @@
 import streamlit as st
-from pages.modules import menu
+from pages.modules.menu import menu
 
 # st.set_page_config(layout='wide', page_title="Inno Food Tier list")
 st.title("Inno Food Tier List")
-menu.menu()
+menu()
 
 st.markdown("SQR Team Project")
 
