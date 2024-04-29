@@ -14,12 +14,6 @@ poetry run python backend/main.py
 
 Access api endpoints via `http://127.0.0.1:8000/docs`.
 
-
-To generate sample data use:
-```
-poetry run python backend/database_populate.py
-```
-
 To run tests of backend methods:
 ```
 poetry run pytest
