@@ -39,5 +39,3 @@ def test_tab_register():
     assert at.text_input[2].value == 'test'
 
     assert at.button[1].label == 'Register'
-
-
