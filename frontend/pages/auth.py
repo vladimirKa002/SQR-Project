@@ -1,6 +1,6 @@
 import streamlit as st
-from menu import menu_with_redirect_auth
-from APIs import loginApi, registerApi
+from pages.modules.menu import menu_with_redirect_auth
+from pages.modules.APIs import loginApi, registerApi
 
 st.title("Login/Register")
 login_tab, register_tab = st.tabs(["Login", "Register"])
