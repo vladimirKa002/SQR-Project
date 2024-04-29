@@ -17,5 +17,5 @@ st.markdown("""
     personalized tier lists for any food category imaginable.
     * **Save and Store Your Creations:** Preserve your culinary
     masterpieces for posterity and share them with fellow food lovers.
-    * **Learn a new fact every day:** You will know everything about food.          
+    * **Learn a new fact every day:** You will know everything about food.        
 """)
