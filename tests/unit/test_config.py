@@ -6,7 +6,8 @@ class TestSettings(unittest.TestCase):
     def test_default_values(self):
         settings = Settings()
 
-        self.assertEqual(settings.secret, "effd59a38c8593085c62f9c6d6e87fcbe9633e85ef16c52f")
+        self.assertEqual(settings.secret,
+                         "effd59a38c8593085c62f9c6d6e87fcbe9633e85ef16c52f")
         self.assertEqual(settings.database_uri, "sqlite:///app.db")
         self.assertEqual(settings.token_url, "/auth/token")
 

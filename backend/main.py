@@ -15,7 +15,8 @@ def setup():
     print("Creating db tables...")
     Base.metadata.create_all(bind=engine)
     inspection = inspect(engine)
-    print(f"Created {len(inspection.get_table_names())} tables: {inspection.get_table_names()}")
+    print(f"Created {len(inspection.get_table_names())} tables: "
+          f"{inspection.get_table_names()}")
 
 
 if __name__ == "__main__":

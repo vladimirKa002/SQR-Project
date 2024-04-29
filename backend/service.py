@@ -4,7 +4,13 @@ import requests
 
 import db_actions
 from db import get_db
-from schemas import *
+from schemas import (
+    TierList,
+    Template,
+    Item,
+    ItemCreate,
+    TemplateCreate
+)
 from security import manager
 
 
@@ -16,18 +22,24 @@ def get_all_templates(db=Depends(get_db)):
     return db_actions.get_all_templates(db)
 
 
-@service_router.get("/template/get/{template_id}", response_model=Template)
+@service_router.get("/template/get/{template_id}",
+                    response_model=Template)
 def get_template(template_id: int, db=Depends(get_db)):
     result = db_actions.get_template(template_id, db)
     if result:
         return result
     else:
-        raise HTTPException(status_code=404, detail="The template with this id does not exist.")
+        raise HTTPException(status_code=404,
+                            detail="The template with this id does not exist.")
 
 
 @service_router.post("/template/create", response_model=Template)
-def create_template(template: TemplateCreate, user=Depends(manager), db=Depends(get_db)):
-    template = db_actions.create_template(template.name, template.items, template.picture, db)
+def create_template(template: TemplateCreate,
+                    user=Depends(manager),
+                    db=Depends(get_db)):
+    template = db_actions.create_template(template.name,
+                                          template.items,
+                                          template.picture, db)
     return Template.from_orm(template)
 
 
@@ -37,34 +49,48 @@ def get_item(item_id: int, db=Depends(get_db)):
     if result:
         return result
     else:
-        raise HTTPException(status_code=404, detail="The item with this id does not exist.")
+        raise HTTPException(status_code=404,
+                            detail="The item with this id does not exist.")
 
 
 @service_router.post("/item/create", response_model=Item)
 def create_item(item: ItemCreate, user=Depends(manager), db=Depends(get_db)):
-    item = db_actions.create_item(item.name, item.description, item.price, item.picture, db)
+    item = db_actions.create_item(item.name,
+                                  item.description,
+                                  item.price,
+                                  item.picture,
+                                  db)
     return Item.from_orm(item)
 
 
 @service_router.post("/item/rank/")
-def rank_item(item_id: int, tierlist_id: int, tier: str, user=Depends(manager), db=Depends(get_db)):
+def rank_item(item_id: int,
+              tierlist_id: int,
+              tier: str,
+              user=Depends(manager),
+              db=Depends(get_db)):
     item = db_actions.get_item(item_id, db)
     if not item:
-        raise HTTPException(status_code=404, detail="The item with this id does not exist.")
+        raise HTTPException(status_code=404,
+                            detail="The item with this id does not exist.")
 
     tierlist = db_actions.get_tierlist_by_id(tierlist_id, db)
     if not tierlist:
-        raise HTTPException(status_code=404, detail="The tierlist for this template and user does not exist.")
+        raise HTTPException(status_code=404,
+                            detail="The tierlist for this "
+                                   "template and user does not exist.")
 
     if tier not in "ABCDEFS_":
-        raise HTTPException(status_code=422, detail="Invalid data for rank was provided.")
+        raise HTTPException(status_code=422,
+                            detail="Invalid data for rank was provided.")
 
     if tier == "_":
         db_actions.delete_tierlist_item(item_id, tierlist.id, db)
         return {'status_code': 200, 'detail': 'The item unranked.'}
     else:
         item = db_actions.rank_tierlist_item(item_id, tierlist.id, tier, db)
-        return {'status_code': 200, 'detail': f"The item was ranked with {item.tier} tier."}
+        return {'status_code': 200, 'detail': f"The item was ranked with "
+                                              f"{item.tier} tier."}
 
 
 @service_router.get("/tierlist/all", response_model=list[TierList])

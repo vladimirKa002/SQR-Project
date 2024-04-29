@@ -1,6 +1,15 @@
 import unittest
 from pydantic import ValidationError
-from backend.schemas import UserCreate, UserResponse, ItemCreate, Item, TierListItem, TemplateCreate, Template, TierList
+from backend.schemas import (
+    UserCreate,
+    UserResponse,
+    ItemCreate,
+    Item,
+    TierListItem,
+    TemplateCreate,
+    Template,
+    TierList
+)
 
 
 class SchemasTestCase(unittest.TestCase):
@@ -100,7 +109,9 @@ class SchemasTestCase(unittest.TestCase):
     def test_tier_list_valid(self):
         data = {
             "id": 1,
-            "template": Template(id=1, name="Template 1", picture=b"image_data"),
+            "template": Template(id=1,
+                                 name="Template 1",
+                                 picture=b"image_data"),
             "items": []
         }
         tier_list = TierList(**data)

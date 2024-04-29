@@ -15,10 +15,13 @@ auth_router = APIRouter()
 @auth_router.post("/auth/register")
 def register(user: UserCreate, db=Depends(get_db)):
     if get_user(user.email) is not None:
-        raise HTTPException(status_code=400, detail="A user with this email already exists")
+        raise HTTPException(status_code=400,
+                            detail="A user with this email already exists")
     else:
         db_user = create_user(db, user)
-        return UserResponse(id=db_user.id, email=db_user.email, name=db_user.name)
+        return UserResponse(id=db_user.id,
+                            email=db_user.email,
+                            name=db_user.name)
 
 
 @auth_router.post(DEFAULT_SETTINGS.token_url)
@@ -26,9 +29,9 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     email = data.username
     password = data.password
 
-    user = get_user(email)  # we are using the same function to retrieve the user
+    user = get_user(email)
     if user is None:
-        raise InvalidCredentialsException  # you can also use your own HTTPException
+        raise InvalidCredentialsException
     elif not verify_password(password, user.password):
         raise InvalidCredentialsException
 

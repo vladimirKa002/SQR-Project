@@ -50,8 +50,14 @@ class TierList(Base):
 
 class TierListItem(Base):
     __tablename__ = "tier_list_items"
-    tier_list_id = Column(Integer, ForeignKey('tier_lists.id'), nullable=False, primary_key=True)
-    item_id = Column(Integer, ForeignKey('items.id'), nullable=False, primary_key=True)
+    tier_list_id = Column(Integer,
+                          ForeignKey('tier_lists.id'),
+                          nullable=False,
+                          primary_key=True)
+    item_id = Column(Integer,
+                     ForeignKey('items.id'),
+                     nullable=False,
+                     primary_key=True)
     tier = Column(String, nullable=False)
 
     item = relationship("Item")
